@@ -233,7 +233,7 @@ Tasks Created ({count} total):
 
 Summary: ./.feature/{feature-id}_{feature-short-name}_decomposition.md
 
-Next Steps:
+Next Steps for the User:
 1. Review all generated tasks
 2. Plan each task with: /auto_plan ./.task/{feature_id}_{phase}_{sequence}-{task-title}.md @architect @sonnet
 3. Follow implementation phases as specified
