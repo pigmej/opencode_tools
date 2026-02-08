@@ -53,7 +53,7 @@ You're the main agent for the Auto Planner workflow. Your role is to coordinate 
    - Key requirements (list)
    - Expected outcome
    - Dependencies
-3. Store as $TASK_CONTEXT (max 1500 tokens)
+3. Store as $TASK_CONTEXT (max 5000 tokens)
 
 **Step 3: Extract Feature Architecture (if exists)**
 If task references parent feature architecture:
@@ -63,7 +63,7 @@ If task references parent feature architecture:
    - Key architectural patterns
    - Critical constraints (security, performance)
    - Integration requirements
-3. Store as $FEATURE_ARCH_SUMMARY (max 6000 tokens)
+3. Store as $FEATURE_ARCH_SUMMARY (max 12000 tokens)
 4. Store full path as $FEATURE_ARCH_PATH
 
 **Step 4: Prepare Inline Context**
@@ -156,9 +156,28 @@ You're creating a detailed implementation plan based on architectural analysis.
    - API Design
    - Testing Strategy
    - Development Phases
+   - **Progress Checklist** (REQUIRED - see format below)
 5. Follow architectural guidelines marked as IMPORTANT
 6. DO NOT write executable code
 7. Include only illustrative code snippets
+8. **Progress Checklist Format:**
+   - Use markdown checkboxes for ALL major implementation items
+   - Think like a senior dev's todo list - major milestones, not micro-tasks
+   - Support one level of nesting for logical grouping
+   - Example format:
+     ```markdown
+     ## Progress Checklist
+     - [ ] Phase 1: Core data models
+       - [ ] User model with validation
+       - [ ] Session management
+     - [ ] Phase 2: API endpoints
+       - [ ] Authentication routes
+       - [ ] Protected resource routes
+     - [ ] Phase 3: Integration & Testing
+       - [ ] Integration with existing services
+       - [ ] Unit and integration tests
+     ```
+   - This checklist will be used during execution to track progress
 ```
 
 **Step 2: Verify Output**

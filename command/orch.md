@@ -39,7 +39,7 @@ You are the main agent for the ORCH (Agent Orchestration) workflow. Your role is
    - Key components to implement (list)
    - Critical implementation steps (top 5-7)
    - Testing requirements
-3. Store as $PLAN_SUMMARY (max 300 tokens)
+3. Store as $PLAN_SUMMARY (max 5000 tokens)
 
 **Step 3: Prepare inline context**
 Combine into $INLINE_CONTEXT:
@@ -75,7 +75,13 @@ You are tasked with executing a development plan. The context has been summarize
 3. Implement all components specified in the plan summary above
 4. Do NOT commit any changes - just make the code changes
 5. Work aggressively and efficiently to complete the plan
-6. When finished, provide a summary of what was implemented and which files were modified
+6. **Progress Tracking (CRITICAL):**
+   - The plan file contains a "Progress Checklist" with `[ ]` checkboxes
+   - Mark each item as `[x]` IMMEDIATELY after completing it
+   - Update the plan file at $PLAN_FILE_PATH after completing each major item
+   - NEVER mark something complete unless it is actually done and working
+   - Example: Change `- [ ] User model with validation` to `- [x] User model with validation`
+7. When finished, provide a summary of what was implemented and which files were modified
 
 **Important:** Stay strictly within the scope of the plan. Do not suggest improvements or add unplanned features.
 ```
@@ -110,33 +116,45 @@ You are a code reviewer tasked with evaluating plan implementation compliance.
    - Plan file: $PLAN_FILE_PATH
 2. Check the git diff for the modified files listed above
 3. Compare the implemented changes against the plan requirements (provided in context)
-4. You're a code reviewer so additionally focus on:
+4. **Verify Progress Checklist (CRITICAL):**
+   - Read the plan file at $PLAN_FILE_PATH
+   - Check the "Progress Checklist" section for checkbox status
+   - Count: total checkboxes, completed `[x]`, uncompleted `[ ]`
+   - For each `[ ]` unchecked item: ASK why it's not completed
+   - For items marked `[x]`: verify the work was actually done
+   - If work appears done but checkbox is unchecked: question the discrepancy
+5. You're a code reviewer so additionally focus on:
    - Code quality and best practices
    - Potential bugs and edge cases
    - Performance implications
    - Security considerations
-5. Calculate a compliance score (0-100%) based on:
+6. Calculate a compliance score (0-100%) based on:
+   - **Checkbox completion ratio** (items marked [x] vs total)
    - How many plan items were fully implemented
    - How closely the implementation follows the plan's approach
    - Whether any unplanned changes were made
    - Quality and correctness of the implementation
    - Tests passing % IF there are tests
-   - Code review feedback from step 4 above
+   - Code review feedback from step 5 above
 
 **Scoring Criteria:**
-- 90-100%: Plan followed excellently with minor or no deviations
-- 70-89%: Plan mostly followed but with some deviations or missing parts
-- 50-69%: Significant deviations from plan or incomplete implementation
-- Below 50%: Major failure to follow the plan
+- 90-100%: Plan followed excellently, all checkboxes marked [x], minor or no deviations
+- 70-89%: Plan mostly followed but with some unchecked items or deviations
+- 50-69%: Significant unchecked items or incomplete implementation
+- Below 50%: Major failure to follow the plan, many items unchecked
 
 **Output Format:**
 Provide a detailed review including:
+- **Checkbox Status:** X/Y completed (e.g., "8/10 checkboxes marked [x]")
+- **Unchecked Items:** List any `[ ]` items and ask why not completed
 - Overall compliance score (%)
 - List of plan items that were successfully implemented
 - List of plan items that were missed or incorrectly implemented
 - Any unplanned changes made
 - Specific recommendations for improvement
 - Clear pass/fail recommendation (pass if 90%+, fail if below 90%)
+
+**Important:** Both you (@agent_2) and @agent_1 must AGREE on completeness. If there are unchecked items, get clarification before passing.
 ```
 
 **Step 2: Analyze @agent_2 Review**
@@ -151,7 +169,8 @@ Provide a detailed review including:
 
 **If score < 90%:**
 1. Extract specific issues from @agent_2 review that need fixing
-2. Spawn a new @agent_1 with this prompt:
+2. Extract list of unchecked `[ ]` items from the review
+3. Spawn a new @agent_1 with this prompt:
 ```
 You are tasked with implementing fixes based on the development plan.
 
@@ -159,32 +178,44 @@ You are tasked with implementing fixes based on the development plan.
 {$INLINE_CONTEXT}
 === END CONTEXT ===
 
+**Unchecked Items from Progress Checklist:**
+[List the `[ ]` items that @agent_2 identified as incomplete]
+
+**Issues to Fix:**
+[List the exact issues that @agent_2 identified, extracted from their review]
+
 **Instructions:**
 1. OPTIONAL: If you need more details, read the full files:
    - Task file: $TASK_FILE_PATH
    - Plan file: $PLAN_FILE_PATH
-2. Fix these specific issues:
-   [List the exact issues that @agent_2 identified, extracted from their review]
-3. Make ONLY the fixes listed above - no other changes
-4. When finished, provide a summary of what specific fixes you made and which files were modified
+2. Focus on completing the UNCHECKED items listed above
+3. Fix the specific issues identified by the reviewer
+4. Make ONLY the fixes listed above - no other changes
+5. **Progress Tracking (CRITICAL):**
+   - After completing each item, mark it as `[x]` in the plan file at $PLAN_FILE_PATH
+   - NEVER mark something complete unless it is actually done and working
+6. When finished, provide a summary of what specific fixes you made and which files were modified
 
 **Important:** The context above contains the task and plan summary for reference.
 ```
 
-3. Update $MODIFIED_FILES with any newly changed files from this iteration
-4. Spawn @agent_2 again to review the new implementation (with updated $MODIFIED_FILES)
-5. Repeat until 90%+ compliance is achieved
+4. Update $MODIFIED_FILES with any newly changed files from this iteration
+5. Spawn @agent_2 again to review the new implementation (with updated $MODIFIED_FILES)
+6. @agent_2 will verify that previously unchecked items are now marked `[x]`
+7. Repeat until 90%+ compliance AND both agents agree all items are complete
 
 ## Phase 4: Final Completion
 
 **When 90%+ compliance is achieved:**
-1. Provide a final summary to the user:
+1. Verify all Progress Checklist items are marked `[x]` in the plan file
+2. Provide a final summary to the user:
+   - **Checkbox Completion:** X/Y items completed (should be 100%)
    - Number of iterations required
    - Final compliance score
    - Summary of what was implemented
    - Any remaining minor deviations (if any)
-2. Indicate that the ORCH (Agent Orchestration) workflow is complete
-3. Do NOT commit changes - let the user decide when to commit
+3. Indicate that the ORCH (Agent Orchestration) workflow is complete
+4. Do NOT commit changes - let the user decide when to commit
 
 ## Important Notes:
 
