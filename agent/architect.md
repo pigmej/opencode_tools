@@ -1,7 +1,7 @@
 ---
 description: Provides architectural guidance and design decisions with internet research capabilities
 mode: subagent
-model: anthropic/claude-opus-4-5
+#model: anthropic/claude-opus-4-5
 temperature: 0.3
 tools:
   write: true
