@@ -2,6 +2,8 @@
 description: Create task based on the discussion from this session
 ---
 
+**User Input:** $ARGUMENTS
+
 Given the context of discussion, please create a new task in ./.task directory. To create task you MUST follow these steps.
 
 # Preparations
